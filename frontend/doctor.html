@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Portal | HealthGuard AI</title>
+    <link rel="stylesheet" href="patientlogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">HealthGuard AI</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="hospital.html">Hospital</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="animated-bg"></div>
+    
+    <div class="login-container">
+        <div class="role-selector">
+            <button class="role-btn active" onclick="showForm('login')">Login</button>
+            <button class="role-btn" onclick="showForm('signup')">Sign Up</button>
+        </div>
+
+        <div class="login-box">
+            <div class="icon-header">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h2 id="form-title">Doctor Login</h2>
+            <p id="form-desc">Access the doctor dashboard</p>
+
+            <form id="loginForm" style="display: block;">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" placeholder="Password" required>
+                </div>
+                
+                <div class="options">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-submit">Login</button>
+            </form>
+
+            <form id="signupForm" style="display: none;">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" placeholder="Confirm Password" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" placeholder="License Number" required>
+                </div>
+
+                <button type="submit" class="login-submit">Sign Up</button>
+            </form>
+            
+            <div class="footer-note">
+                <p id="footer-text">New doctor? <a href="#" onclick="showForm('signup')">Sign up here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showForm(type) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const title = document.getElementById('form-title');
+            const desc = document.getElementById('form-desc');
+            const footer = document.getElementById('footer-text');
+            const btns = document.querySelectorAll('.role-btn');
+            
+            btns.forEach(btn => btn.classList.remove('active'));
+            if (type === 'login') {
+                btns[0].classList.add('active');
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                title.innerText = 'Doctor Login';
+                desc.innerText = 'Access the doctor dashboard';
+                footer.innerHTML = 'New doctor? <a href="#" onclick="showForm(\'signup\')">Sign up here</a>';
+            } else {
+                btns[1].classList.add('active');
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                title.innerText = 'Doctor Sign Up';
+                desc.innerText = 'Join HealthGuard AI';
+                footer.innerHTML = 'Already have an account? <a href="#" onclick="showForm(\'login\')">Login here</a>';
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            // Simple validation - in a real app, this would check against a database
+            if (email && password) {
+                // Store login status
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userRole', 'doctor');
+                
+                alert('Doctor login successful!');
+                
+                // Redirect to doctor dashboard
+                window.location.href = 'doctor-dashboard.html';
+            } else {
+                alert('Please enter both email and password');
+            }
+        });
+
+        // Handle signup form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            const confirmPassword = this.querySelectorAll('input[type="password"]')[1].value;
+            const license = this.querySelector('input[placeholder="License Number"]').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (name && email && password && license) {
+                alert('Doctor registration successful! Please login.');
+                showForm('login');
+            } else {
+                alert('Please fill all fields');
+            }
+        });
+    </script>
+</body>
+</html>

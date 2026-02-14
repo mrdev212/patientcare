@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard | HealthGuard AI</title>
+    <link rel="stylesheet" href="patientlogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">HealthGuard AI</h1>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="#" onclick="logout()" class="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="patient-header">
+            <div class="patient-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="patient-info">
+                <h2>Jane Doe</h2>
+                <p>Patient ID: P001 | Age: 35 | Blood Type: O+</p>
+                <div class="health-status">
+                    <span class="status-indicator stable">Stable</span>
+                </div>
+            </div>
+        </div>
+        <p>Your personalized health dashboard powered by HealthGuard AI</p>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3><i class="fas fa-disease"></i> Current Diseases & Conditions</h3>
+                <div class="disease-list">
+                    <div class="disease-item">
+                        <div class="disease-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="disease-details">
+                            <h4>Hypertension (High Blood Pressure)</h4>
+                            <p>Diagnosed: March 2023</p>
+                            <p>Current BP: 128/82 mmHg</p>
+                            <span class="severity moderate">Moderate</span>
+                        </div>
+                    </div>
+                    <div class="disease-item">
+                        <div class="disease-icon">
+                            <i class="fas fa-syringe"></i>
+                        </div>
+                        <div class="disease-details">
+                            <h4>Type 2 Diabetes</h4>
+                            <p>Diagnosed: January 2024</p>
+                            <p>Last HbA1c: 6.8%</p>
+                            <span class="severity controlled">Controlled</span>
+                        </div>
+                    </div>
+                    <div class="disease-item">
+                        <div class="disease-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="disease-details">
+                            <h4>Hyperlipidemia</h4>
+                            <p>Diagnosed: June 2023</p>
+                            <p>Cholesterol: 210 mg/dL</p>
+                            <span class="severity mild">Mild</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3><i class="fas fa-pills"></i> Current Medications</h3>
+                <div class="medication-list">
+                    <div class="medication-item">
+                        <h4>Lisinopril</h4>
+                        <p><strong>Dosage:</strong> 10mg</p>
+                        <p><strong>Frequency:</strong> Once daily</p>
+                        <p><strong>Consumption Rate:</strong> 95%</p>
+                    </div>
+                    <div class="medication-item">
+                        <h4>Metformin</h4>
+                        <p><strong>Dosage:</strong> 500mg</p>
+                        <p><strong>Frequency:</strong> Twice daily</p>
+                        <p><strong>Consumption Rate:</strong> 88%</p>
+                    </div>
+                    <div class="medication-item">
+                        <h4>Atorvastatin</h4>
+                        <p><strong>Dosage:</strong> 20mg</p>
+                        <p><strong>Frequency:</strong> Once daily</p>
+                        <p><strong>Consumption Rate:</strong> 93%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card full-width">
+                <h3><i class="fas fa-chart-line"></i> Medication Consumption Graph</h3>
+                <canvas id="consumptionChart"></canvas>
+            </div>
+
+            <div class="dashboard-card">
+                <h3><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h3>
+                <div class="appointment-item">
+                    <p><strong>Dr. John Smith</strong></p>
+                    <p>Cardiology Check-up</p>
+                    <p>March 15, 2026 - 10:00 AM</p>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3><i class="fas fa-bell"></i> AI Reminders</h3>
+                <div class="reminder-item">
+                    <p>Take Lisinopril - Due in 2 hours</p>
+                    <button class="btn btn-primary">Mark as Taken</button>
+                </div>
+                <div class="reminder-item">
+                    <p>Take Metformin - Due in 12 hours</p>
+                    <button class="btn btn-primary">Mark as Taken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for the chart
+        const ctx = document.getElementById('consumptionChart').getContext('2d');
+        const consumptionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Lisinopril Consumption %',
+                    data: [90, 95, 92, 98, 95, 97],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Metformin Consumption %',
+                    data: [85, 88, 90, 87, 89, 88],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Atorvastatin Consumption %',
+                    data: [88, 92, 90, 94, 91, 93],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly Medication Consumption Rate'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        function logout() {
+            // Clear login status
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            alert('Logged out successfully');
+            window.location.href = 'index.html';
+        }
+
+    </script>
+</body>
+</html>

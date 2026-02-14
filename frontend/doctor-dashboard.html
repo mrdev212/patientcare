@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | HealthGuard AI</title>
+    <link rel="stylesheet" href="patientlogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+    <script>
+        // Check if doctor is logged in
+        if (!localStorage.getItem('isLoggedIn') || localStorage.getItem('userRole') !== 'doctor') {
+            window.location.href = 'doctor.html';
+        }
+    </script>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">HealthGuard AI</h1>
+            <ul class="nav-menu">
+                <li><a href="doctor-dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="#" onclick="logout()" class="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="doctor-header">
+            <div class="doctor-avatar">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="doctor-info">
+                <h2>Dr. Sarah Johnson</h2>
+                <p>Cardiologist | License: MD12345</p>
+                <div class="status-indicator online">Online</div>
+            </div>
+        </div>
+        <p>Manage your patients and their health records</p>
+
+        <!-- Add New Patient Section -->
+        <div class="dashboard-card">
+            <h3><i class="fas fa-user-plus"></i> Add New Patient</h3>
+            <form id="addPatientForm" class="patient-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="Patient Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Email Address" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" placeholder="Phone Number" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-birthday-cake"></i>
+                        <input type="date" placeholder="Date of Birth" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-tint"></i>
+                        <select required>
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-star"></i>
+                        <select required>
+                            <option value="">Patient Rating</option>
+                            <option value="1">1 - Critical</option>
+                            <option value="2">2 - Serious</option>
+                            <option value="3">3 - Moderate</option>
+                            <option value="4">4 - Stable</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h4>Patient Status</h4>
+                    <div class="status-options">
+                        <label><input type="radio" name="status" value="stable" checked> Stable</label>
+                        <label><input type="radio" name="status" value="critical"> Critical</label>
+                        <label><input type="radio" name="status" value="monitoring"> Under Monitoring</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Patient</button>
+            </form>
+        </div>
+
+        <!-- Patient List -->
+        <div class="dashboard-card">
+            <h3><i class="fas fa-users"></i> Patient List</h3>
+            <div class="patient-list">
+                <div class="patient-card" onclick="openPatientModal(1)">
+                    <div class="patient-card-header">
+                        <div class="patient-avatar-small">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="patient-details">
+                            <h4>Jane Doe</h4>
+                            <p>ID: P001 | Age: 35 | Blood: O+</p>
+                        </div>
+                        <div class="patient-status">
+                            <span class="status stable">Stable</span>
+                        </div>
+                    </div>
+                    <div class="patient-quick-info">
+                        <div class="info-item">
+                            <i class="fas fa-disease"></i>
+                            <span>Hypertension, Diabetes</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-pills"></i>
+                            <span>3 Medications</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Next: Mar 15, 2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="patient-card" onclick="openPatientModal(2)">
+                    <div class="patient-card-header">
+                        <div class="patient-avatar-small">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="patient-details">
+                            <h4>John Smith</h4>
+                            <p>ID: P002 | Age: 42 | Blood: A+</p>
+                        </div>
+                        <div class="patient-status">
+                            <span class="status monitoring">Monitoring</span>
+                        </div>
+                    </div>
+                    <div class="patient-quick-info">
+                        <div class="info-item">
+                            <i class="fas fa-disease"></i>
+                            <span>Heart Disease</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-pills"></i>
+                            <span>4 Medications</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Next: Mar 20, 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>24</h3>
+                    <p>Total Patients</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>18</h3>
+                    <p>Stable Patients</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>3</h3>
+                    <p>Critical Cases</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>8</h3>
+                    <p>Today's Appointments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Patient Details</h3>
+                <span class="close-modal" onclick="closePatientModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="patient-profile">
+                    <div class="profile-header">
+                        <div class="patient-avatar-large">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="patientName">Jane Doe</h3>
+                            <p>ID: P001 | Age: 35 | Blood: O+</p>
+                            <span class="status stable">Stable</span>
+                        </div>
+                    </div>
+
+                    <!-- Diseases Section -->
+                    <div class="profile-section">
+                        <h4><i class="fas fa-disease"></i> Current Diseases & Conditions</h4>
+                        <div class="disease-tags">
+                            <span class="disease-tag">Hypertension (High Blood Pressure)</span>
+                            <span class="disease-tag">Type 2 Diabetes</span>
+                            <span class="disease-tag">Hyperlipidemia</span>
+                        </div>
+                    </div>
+
+                    <!-- Medications Section -->
+                    <div class="profile-section">
+                        <h4><i class="fas fa-pills"></i> Current Medications</h4>
+                        <div class="medication-list">
+                            <div class="medication-item">
+                                <div class="med-info">
+                                    <h5>Lisinopril</h5>
+                                    <p>Dosage: 10mg | Frequency: Once daily</p>
+                                </div>
+                                <div class="med-timer">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Next dose: 2:00 PM</span>
+                                </div>
+                            </div>
+                            <div class="medication-item">
+                                <div class="med-info">
+                                    <h5>Metformin</h5>
+                                    <p>Dosage: 500mg | Frequency: Twice daily</p>
+                                </div>
+                                <div class="med-timer">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Next dose: 8:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointments Section -->
+                    <div class="profile-section">
+                        <h4><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h4>
+                        <div class="appointment-list">
+                            <div class="appointment-item">
+                                <div class="appointment-info">
+                                    <h5>Cardiology Check-up</h5>
+                                    <p>March 15, 2026 - 10:00 AM</p>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn btn-secondary">Reschedule</button>
+                                    <button class="btn btn-primary">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminders Section -->
+                    <div class="profile-section">
+                        <h4><i class="fas fa-bell"></i> Active Reminders</h4>
+                        <div class="reminder-list">
+                            <div class="reminder-item">
+                                <p><strong>Take Lisinopril</strong> - Due in 2 hours</p>
+                                <button class="btn btn-primary">Mark as Taken</button>
+                            </div>
+                            <div class="reminder-item">
+                                <p><strong>Take Metformin</strong> - Due in 12 hours</p>
+                                <button class="btn btn-primary">Mark as Taken</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vital Signs Chart -->
+                    <div class="profile-section">
+                        <h4><i class="fas fa-chart-line"></i> Vital Signs Trend</h4>
+                        <canvas id="vitalsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openPatientModal(patientId) {
+            document.getElementById('patientModal').style.display = 'block';
+            // In a real app, you would load patient data based on patientId
+        }
+
+        function closePatientModal() {
+            document.getElementById('patientModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('patientModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Add patient form submission
+        document.getElementById('addPatientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Patient added successfully!');
+            this.reset();
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userRole');
+            alert('Logged out successfully');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize vitals chart
+        const ctx = document.getElementById('vitalsChart').getContext('2d');
+        const vitalsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Blood Pressure (Systolic)',
+                    data: [140, 135, 130, 128, 125, 122],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Blood Pressure (Diastolic)',
+                    data: [90, 85, 82, 80, 78, 75],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 60,
+                        max: 160
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .patient-form {
+            max-width: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section {
+            margin: 1.5rem 0;
+        }
+
+        .form-section h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .status-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .patient-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .patient-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .patient-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .patient-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .patient-avatar-small {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .patient-details h4 {
+            margin: 0 0 0.25rem 0;
+            color: white;
+        }
+
+        .patient-details p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .patient-status {
+            margin-left: auto;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.stable {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status.monitoring {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status.critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .patient-quick-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .stat-info p {
+            margin: 0.25rem 0 0 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            margin: 2% auto;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: white;
+        }
+
+        .close-modal {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .patient-profile {
+            color: white;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .patient-avatar-large {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .profile-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+
+        .profile-info p {
+            margin: 0.25rem 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+
+        .profile-section h4 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .disease-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .disease-tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .medication-list, .appointment-list, .reminder-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .medication-item, .appointment-item, .reminder-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .medication-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .med-info h5 {
+            margin: 0 0 0.25rem 0;
+            color: white;
+        }
+
+        .med-info p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .med-timer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .appointment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .appointment-info h5 {
+            margin: 0 0 0.25rem 0;
+            color: white;
+        }
+
+        .appointment-info p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reminder-item p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .doctor-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .doctor-info h2 {
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+
+        .doctor-info p {
+            margin: 0.25rem 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-indicator.online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\gupta\Videos\Captures\frontend\doctor-dashboard.html
