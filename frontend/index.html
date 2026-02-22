@@ -1,48 +1,1065 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthGuard AI | Patient Engagement</title>
-    <link rel="stylesheet" href="doctor.css">
+    <title>HealthGuard AI | Patient Engagement & Reminder Solutions</title>
+    <meta name="description"
+        content="HealthGuard AI - LSTM-based personalized patient engagement, medication reminders, and adherence tracking for doctors and patients.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --dark-2: #1e293b;
+            --dark-3: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-faint: #475569;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ─── NAVBAR ─────────────────────────────────── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 9px 22px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-outline {
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-green:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-lg {
+            padding: 14px 32px;
+            font-size: 1rem;
+        }
+
+        /* ─── HERO ───────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 120px 2rem 80px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(37, 99, 235, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 10% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+        }
+
+        /* Animated grid */
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbFloat 12s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.15);
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(16, 185, 129, 0.1);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(139, 92, 246, 0.12);
+            top: 50%;
+            left: 70%;
+            animation-delay: -8s;
+        }
+
+        @keyframes orbFloat {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(30px, 20px) scale(1.1);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 850px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--secondary-light);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-badge span {
+            width: 6px;
+            height: 6px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.3
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(2.4rem, 6vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.12;
+            margin-bottom: 20px;
+            animation: fadeSlideUp 0.8s ease forwards;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--text-muted);
+            margin-bottom: 36px;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeSlideUp 0.8s 0.15s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            animation: fadeSlideUp 0.8s 0.3s ease both;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 56px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            animation: fadeSlideUp 0.8s 0.5s ease both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--secondary-light);
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ─── SECTION BASE ───────────────────────────── */
+        section {
+            padding: 90px 2rem;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .section-sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto 56px;
+        }
+
+        /* ─── FEATURES ───────────────────────────────── */
+        .features-bg {
+            background: var(--dark-2);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 18px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        .ic-blue {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+        }
+
+        .ic-green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .ic-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .ic-orange {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+        }
+
+        .ic-pink {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+        }
+
+        .ic-teal {
+            background: rgba(20, 184, 166, 0.15);
+            color: #2dd4bf;
+        }
+
+        /* ─── HOW IT WORKS ───────────────────────────── */
+        .how-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0;
+            position: relative;
+        }
+
+        .how-steps::before {
+            content: '';
+            position: absolute;
+            top: 32px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0.3;
+        }
+
+        .step {
+            text-align: center;
+            padding: 24px 20px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0 auto 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sn-1 {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        }
+
+        .sn-2 {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+
+        .sn-3 {
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+        }
+
+        .sn-4 {
+            background: linear-gradient(135deg, #c2410c, #f97316);
+        }
+
+        .step h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ─── ROLES SECTION ──────────────────────────── */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .role-card {
+            border-radius: 20px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+        }
+
+        .role-patient {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(37, 99, 235, 0.25);
+        }
+
+        .role-doctor {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(37, 99, 235, 0.06));
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .role-emoji {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .role-card h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .role-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 22px;
+            line-height: 1.65;
+        }
+
+        .role-list {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .role-list li {
+            padding: 6px 0;
+            font-size: 0.87rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-list li::before {
+            content: '✓';
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .role-patient .role-list li::before {
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+        }
+
+        .role-doctor .role-list li::before {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        /* ─── STATS BAND ─────────────────────────────── */
+        .stats-band {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(16, 185, 129, 0.08));
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 2rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item {}
+
+        .stat-number {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .stat-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .sn-blue {
+            color: #60a5fa;
+        }
+
+        .sn-green {
+            color: #34d399;
+        }
+
+        .sn-purple {
+            color: #a78bfa;
+        }
+
+        .sn-orange {
+            color: #fb923c;
+        }
+
+        /* ─── CTA FOOTER ──────────────────────────────── */
+        .cta-section {
+            text-align: center;
+            padding: 100px 2rem;
+            background: var(--dark-2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .cta-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* ─── FOOTER ─────────────────────────────────── */
+        footer {
+            background: var(--dark);
+            border-top: 1px solid var(--border);
+            padding: 40px 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-faint);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        .footer-copy {
+            color: var(--text-faint);
+            font-size: 0.8rem;
+        }
+
+        /* ─── SCROLL ANIMATIONS ───────────────────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── RESPONSIVE ─────────────────────────────── */
+        @media (max-width: 640px) {
+            .how-steps::before {
+                display: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
-        <div class="nav-container">
-            <h1 class="nav-logo">HealthGuard AI</h1>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="active">Home</a></li>
+        <div class="nav-inner">
+            <a class="nav-logo" href="index.html">🏥 HealthGuard <span>AI</span></a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how">How It Works</a></li>
+                <li><a href="#roles">For You</a></li>
                 <li><a href="hospital.html">Hospital</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
+            <div class="nav-cta">
+                <a href="/login" class="btn btn-outline">Patient Login</a>
+                <a href="/doctor-login" class="btn btn-green">Doctor Login</a>
+            </div>
         </div>
     </nav>
 
-    <div class="landing-container">
-        <div class="shape circle"></div>
-        <div class="shape pulse"></div>
-        <i class="fas fa-heartbeat floating-icon icon-1"></i>
-        <i class="fas fa-pills floating-icon icon-2"></i>
-        <i class="fas fa-user-md floating-icon icon-3"></i>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
 
-        <header class="hero-content">
-            <h1 class="reveal-text">HealthGuard <span>AI</span></h1>
-            <div class="horizontal-line"></div>
-            <p class="fade-in">LSTM-Based Personalized Care & Medication Reminders</p>
-            
-            <div class="cta-buttons fade-in-delayed">
-                <a href="login.html" class="btn btn-primary">Patient Portal</a>
-                <a href="doctor.html" class="btn btn-secondary">Doctor Login</a>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span></span> AI-Powered Patient Care Platform
             </div>
-        </header>
-        
-        <div class="scroll-indicator">
-            
-            <div class="mouse"></div>
+            <h1 class="hero-title">
+                Smarter Care,<br>
+                <span class="gradient-text">Better Outcomes</span>
+            </h1>
+            <p class="hero-subtitle">
+                HealthGuard AI uses LSTM-based deep learning to predict patient adherence, deliver personalized
+                medication reminders, and empower healthcare professionals with real-time insights.
+            </p>
+            <div class="hero-actions">
+                <a href="/signup" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Get Started Free
+                </a>
+                <a href="/doctor-signup" class="btn btn-green btn-lg">
+                    <i class="fas fa-user-md"></i> Register as Doctor
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">92%</div>
+                    <div class="hero-stat-label">Adherence Rate</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">10K+</div>
+                    <div class="hero-stat-label">Patients Tracked</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">500+</div>
+                    <div class="hero-stat-label">Doctors Registered</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">99.9%</div>
+                    <div class="hero-stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features-bg" id="features">
+        <div class="section-inner">
+            <p class="section-label">Core Features</p>
+            <h2 class="section-title">Everything You Need,<br>In One Platform</h2>
+            <p class="section-sub">Designed for doctors, hospitals, and patients — HealthGuard AI covers every aspect of
+                modern patient engagement.</p>
+
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-blue"><i class="fas fa-brain"></i></div>
+                    <h3>LSTM Adherence Prediction</h3>
+                    <p>Our deep learning model analyzes patient history to predict medication adherence and flag at-risk
+                        patients before they miss a dose.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-green"><i class="fas fa-bell"></i></div>
+                    <h3>Smart Reminders</h3>
+                    <p>Personalized reminder schedules based on patient behavior patterns. Real-time notifications via
+                        SMS, email, or in-app alerts.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-purple"><i class="fas fa-chart-line"></i></div>
+                    <h3>Doctor Dashboard</h3>
+                    <p>A powerful real-time dashboard for doctors to view all patients, track adherence scores, and take
+                        immediate action on alerts.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-orange"><i class="fas fa-database"></i></div>
+                    <h3>MongoDB Data Storage</h3>
+                    <p>All patient records, medication history, and health data are securely stored in MongoDB Atlas
+                        with encryption and fast queries.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-pink"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Secure Authentication</h3>
+                    <p>Role-based login for patients and doctors. Passwords secured with bcrypt hashing. JWT-ready for
+                        future session management.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon ic-teal"><i class="fas fa-hospital"></i></div>
+                    <h3>Hospital Integration</h3>
+                    <p>Hospitals can manage their entire doctor and patient network in a single platform, with
+                        department-level analytics and reporting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS BAND -->
+    <div class="stats-band">
+        <div class="stats-row">
+            <div class="stat-item reveal">
+                <div class="stat-number sn-blue">92%</div>
+                <div class="stat-text">Average Adherence Improvement</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number sn-green">3x</div>
+                <div class="stat-text">Faster Patient Onboarding</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number sn-purple">50ms</div>
+                <div class="stat-text">Average API Response Time</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number sn-orange">24/7</div>
+                <div class="stat-text">Monitoring & Alerts</div>
+            </div>
         </div>
     </div>
 
+    <!-- HOW IT WORKS -->
+    <section id="how">
+        <div class="section-inner">
+            <p class="section-label">Process</p>
+            <h2 class="section-title">How HealthGuard AI Works</h2>
+            <p class="section-sub">From registration to real-time care — our streamlined process gets patients supported
+                in minutes.</p>
+
+            <div class="how-steps">
+                <div class="step reveal">
+                    <div class="step-number sn-1">1</div>
+                    <h3>Doctor Registers</h3>
+                    <p>Doctors sign up with their license & specialization. Their profile is verified and stored in
+                        MongoDB.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-number sn-2">2</div>
+                    <h3>Patient Onboarding</h3>
+                    <p>Doctors add patients directly from the dashboard. Patient records are created with medical
+                        history.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-number sn-3">3</div>
+                    <h3>AI Analysis Runs</h3>
+                    <p>Our LSTM model analyses patterns to predict adherence risk and generate smart reminder schedules.
+                    </p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-number sn-4">4</div>
+                    <h3>Real-time Monitoring</h3>
+                    <p>Doctors get live alerts when patients miss doses. Patients receive nudges through multiple
+                        channels.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROLES SECTION -->
+    <section class="features-bg" id="roles">
+        <div class="section-inner">
+            <p class="section-label">Access Portals</p>
+            <h2 class="section-title">Built for Everyone Involved</h2>
+            <p class="section-sub">Whether you're a patient managing your health or a doctor overseeing hundreds of
+                patients, HealthGuard AI has a dedicated experience for you.</p>
+
+            <div class="roles-grid">
+                <!-- Patient Card -->
+                <div class="role-card role-patient reveal">
+                    <div class="role-emoji">🧑‍⚕️</div>
+                    <h3>For Patients</h3>
+                    <p>Access your personal health dashboard, view your medication schedule, check doctor notes, and
+                        never miss a reminder again.</p>
+                    <ul class="role-list">
+                        <li>View personalized medication schedule</li>
+                        <li>Track your adherence score over time</li>
+                        <li>Receive smart, timely reminders</li>
+                        <li>Secure access with encrypted login</li>
+                        <li>Stay connected with your doctor</li>
+                    </ul>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <a href="/login" class="btn btn-primary">Patient Login</a>
+                        <a href="/signup" class="btn btn-outline">Create Account</a>
+                    </div>
+                </div>
+
+                <!-- Doctor Card -->
+                <div class="role-card role-doctor reveal">
+                    <div class="role-emoji">👨‍⚕️</div>
+                    <h3>For Doctors</h3>
+                    <p>Manage your full patient panel, monitor live adherence data, add new patients, view health
+                        histories, and act on AI-generated alerts.</p>
+                    <ul class="role-list">
+                        <li>Full patient management dashboard</li>
+                        <li>AI-generated adherence risk scores</li>
+                        <li>Instant alerts for at-risk patients</li>
+                        <li>Add & manage patient records easily</li>
+                        <li>View detailed health reports & trends</li>
+                    </ul>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <a href="/doctor-login" class="btn btn-green">Doctor Login</a>
+                        <a href="/doctor-signup" class="btn btn-outline">Register as Doctor</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+        <h2>Ready to Transform<br><span style="color:var(--secondary-light)">Patient Care?</span></h2>
+        <p>Join thousands of healthcare professionals already using HealthGuard AI.</p>
+        <div class="cta-actions">
+            <a href="/signup" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i> Start as Patient
+            </a>
+            <a href="/doctor-signup" class="btn btn-green btn-lg">
+                <i class="fas fa-user-md"></i> Join as Doctor
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">🏥 HealthGuard AI</div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="#features">Features</a>
+                <a href="hospital.html">Hospital</a>
+                <a href="contact.html">Contact</a>
+                <a href="/login">Patient Login</a>
+                <a href="/doctor-login">Doctor Login</a>
+            </div>
+            <div class="footer-copy">© 2026 HealthGuard AI. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll reveal animation
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        reveals.forEach(el => observer.observe(el));
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            document.querySelector('.navbar').style.background =
+                window.scrollY > 60 ? 'rgba(15,23,42,0.98)' : 'rgba(15,23,42,0.85)';
+        });
+    </script>
 </body>
+
 </html>

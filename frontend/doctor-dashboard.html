@@ -46,54 +46,39 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" placeholder="Patient Full Name" required>
+                        <input type="text" id="patientName" placeholder="Patient Full Name" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" placeholder="Email Address" required>
+                        <input type="email" id="patientEmail" placeholder="Email Address" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-phone"></i>
-                        <input type="tel" placeholder="Phone Number" required>
+                        <input type="tel" id="patientPhone" placeholder="Phone Number" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-birthday-cake"></i>
-                        <input type="date" placeholder="Date of Birth" required>
+                        <input type="number" id="patientAge" placeholder="Age" min="1" max="150" required>
                     </div>
                     <div class="input-group">
-                        <i class="fas fa-tint"></i>
-                        <select required>
-                            <option value="">Select Blood Group</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
+                        <i class="fas fa-venus-mars"></i>
+                        <select id="patientGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <i class="fas fa-star"></i>
-                        <select required>
-                            <option value="">Patient Rating</option>
-                            <option value="1">1 - Critical</option>
-                            <option value="2">2 - Serious</option>
-                            <option value="3">3 - Moderate</option>
-                            <option value="4">4 - Stable</option>
-                            <option value="5">5 - Excellent</option>
-                        </select>
+                        <i class="fas fa-home"></i>
+                        <input type="text" id="patientAddress" placeholder="Address" required>
                     </div>
                 </div>
                 <div class="form-section">
-                    <h4>Patient Status</h4>
-                    <div class="status-options">
-                        <label><input type="radio" name="status" value="stable" checked> Stable</label>
-                        <label><input type="radio" name="status" value="critical"> Critical</label>
-                        <label><input type="radio" name="status" value="monitoring"> Under Monitoring</label>
-                    </div>
+                    <h4>Medical History (Optional)</h4>
+                    <textarea id="patientHistory" placeholder="Any existing health conditions or allergies..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: Arial;"></textarea>
                 </div>
+                <div id="patientMessage" style="margin-top: 10px; text-align: center; display: none;"></div>
                 <button type="submit" class="btn btn-primary">Add Patient</button>
             </form>
         </div>
@@ -322,19 +307,81 @@
         }
 
         // Add patient form submission
-        document.getElementById('addPatientForm').addEventListener('submit', function(e) {
+        document.getElementById('addPatientForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('Patient added successfully!');
-            this.reset();
+            
+            const fullName = document.getElementById('patientName').value;
+            const email = document.getElementById('patientEmail').value;
+            const age = document.getElementById('patientAge').value;
+            const gender = document.getElementById('patientGender').value;
+            const phone = document.getElementById('patientPhone').value;
+            const address = document.getElementById('patientAddress').value;
+            const medicalHistory = document.getElementById('patientHistory').value;
+            const messageDiv = document.getElementById('patientMessage');
+            
+            const doctorId = localStorage.getItem('doctorId');
+            
+            if (!doctorId) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Error: Doctor ID not found. Please login again.';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/create-patient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fullName,
+                        email,
+                        age: parseInt(age),
+                        gender,
+                        phone,
+                        address,
+                        medicalHistory,
+                        doctorId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = `Patient created successfully! Default Password: ${data.patient.defaultPassword}`;
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        messageDiv.style.display = 'none';
+                    }, 5000);
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.error || 'Failed to create patient';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Connection error. Please try again.';
+            }
         });
 
         // Logout function
         function logout() {
             localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userEmail');
+            localStorage.removeItem('doctorId');
+            localStorage.removeItem('doctorEmail');
+            localStorage.removeItem('doctorName');
             localStorage.removeItem('userRole');
             alert('Logged out successfully');
-            window.location.href = 'index.html';
+            window.location.href = 'doctor.html';
         }
 
         // Initialize vitals chart

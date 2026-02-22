@@ -32,11 +32,11 @@
             <form id="loginForm">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" placeholder="Email Address" required>
+                    <input type="email" id="email" name="email" placeholder="Email Address" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Password" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
                 
                 <div class="options">
@@ -45,34 +45,59 @@
                 </div>
 
                 <button type="submit" class="login-submit">Secure Login</button>
+                <div id="message" style="margin-top: 10px; text-align: center; display: none;"></div>
             </form>
             
             <div class="footer-note">
-                <p>Not registered? <a href="#">Contact your Clinic</a></p>
+                <p>Not registered? <a href="signup.html">Sign up here</a></p>
             </div>
         </div>
     </div>
 
     <script>
         // Handle login form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.querySelector('input[type="email"]').value;
-            const password = document.querySelector('input[type="password"]').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
             
-            // Simple validation - in a real app, this would check against a database
-            if (email && password) {
-                // Store login status
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                
-                alert('Login successful!');
-                
-                // Redirect to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('Please enter both email and password');
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Login successful! Redirecting...';
+                    
+                    // Store login status
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('userEmail', data.user.email);
+                    
+                    // Redirect after 1 second
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Connection error. Please try again.';
             }
         });
     </script>

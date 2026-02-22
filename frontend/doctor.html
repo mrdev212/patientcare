@@ -37,11 +37,11 @@
             <form id="loginForm" style="display: block;">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" placeholder="Email Address" required>
+                    <input type="email" id="login-email" placeholder="Email Address" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Password" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
                 </div>
                 
                 <div class="options">
@@ -50,31 +50,37 @@
                 </div>
 
                 <button type="submit" class="login-submit">Login</button>
+                <div id="loginMessage" style="margin-top: 10px; text-align: center; display: none;"></div>
             </form>
 
             <form id="signupForm" style="display: none;">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
-                    <input type="text" placeholder="Full Name" required>
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-stethoscope"></i>
+                    <input type="text" id="signup-specialization" placeholder="Specialization (e.g., Cardiologist)" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" placeholder="Email Address" required>
+                    <input type="email" id="signup-email" placeholder="Email Address" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Password" required>
+                    <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Confirm Password" required>
+                    <input type="password" id="signup-confirmPassword" placeholder="Confirm Password" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-id-card"></i>
-                    <input type="text" placeholder="License Number" required>
+                    <input type="text" id="signup-license" placeholder="License Number" required>
                 </div>
 
                 <button type="submit" class="login-submit">Sign Up</button>
+                <div id="signupMessage" style="margin-top: 10px; text-align: center; display: none;"></div>
             </form>
             
             <div class="footer-note">
@@ -110,49 +116,103 @@
             }
         }
 
-        // Handle login form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Handle doctor login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = this.querySelector('input[type="email"]').value;
-            const password = this.querySelector('input[type="password"]').value;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('loginMessage');
             
-            // Simple validation - in a real app, this would check against a database
-            if (email && password) {
-                // Store login status
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userRole', 'doctor');
-                
-                alert('Doctor login successful!');
-                
-                // Redirect to doctor dashboard
-                window.location.href = 'doctor-dashboard.html';
-            } else {
-                alert('Please enter both email and password');
+            try {
+                const response = await fetch('/api/doctor-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Login successful! Redirecting...';
+                    
+                    // Store login status
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userRole', 'doctor');
+                    localStorage.setItem('doctorId', data.doctor.id);
+                    localStorage.setItem('doctorEmail', data.doctor.email);
+                    localStorage.setItem('doctorName', data.doctor.name);
+                    
+                    // Redirect after 1 second
+                    setTimeout(() => {
+                        window.location.href = 'doctor-dashboard.html';
+                    }, 1000);
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Connection error. Please try again.';
             }
         });
 
-        // Handle signup form submission
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
+        // Handle doctor signup form submission
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = this.querySelector('input[type="text"]').value;
-            const email = this.querySelector('input[type="email"]').value;
-            const password = this.querySelector('input[type="password"]').value;
-            const confirmPassword = this.querySelectorAll('input[type="password"]')[1].value;
-            const license = this.querySelector('input[placeholder="License Number"]').value;
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const specialization = document.getElementById('signup-specialization').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirmPassword').value;
+            const licenseNumber = document.getElementById('signup-license').value;
+            const messageDiv = document.getElementById('signupMessage');
             
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-            
-            if (name && email && password && license) {
-                alert('Doctor registration successful! Please login.');
-                showForm('login');
-            } else {
-                alert('Please fill all fields');
+            try {
+                const response = await fetch('/api/doctor-signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email, 
+                        password, 
+                        confirmPassword, 
+                        name, 
+                        specialization,
+                        licenseNumber
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Account created successfully! Redirecting to login...';
+                    
+                    // Redirect to login
+                    setTimeout(() => {
+                        showForm('login');
+                    }, 2000);
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.error || 'Signup failed';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Connection error. Please try again.';
             }
         });
     </script>
